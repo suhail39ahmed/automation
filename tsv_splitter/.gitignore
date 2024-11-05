@@ -1,0 +1,49 @@
+import os
+import sys
+
+def split_file(file_path, chunk_size=245*1024*1024):
+    """
+    Split a large TSV file into smaller chunks.
+
+    :param file_path: Path to the large TSV file.
+    :param chunk_size: Maximum size of each chunk in bytes. Default is 245 MB.
+    :return: Number of chunks created.
+    """
+    with open(file_path, 'r', encoding='utf-8', errors='replace') as file:
+        header = file.readline()  # Read the header line
+        chunk_number = 0  # Initialize chunk number
+        
+        while True:
+            chunk_file_path = f"{file_path}_chunk_{chunk_number}.tsv"
+            with open(chunk_file_path, 'w', encoding='utf-8') as chunk_file:
+                chunk_file.write(header)  # Write the header to the chunk
+                written_bytes = len(header)  # Track the number of bytes written
+                
+                while written_bytes < chunk_size:
+                    line = file.readline()  # Read the next line
+                    if not line:  # End of file
+                        break
+                    chunk_file.write(line)  # Write the line to the chunk
+                    written_bytes += len(line)  # Update the bytes count
+            
+            # If the last chunk is smaller than the specified size, break
+            if written_bytes < chunk_size:
+                break
+            chunk_number += 1  # Increment chunk number
+        
+    return chunk_number + 1  # Return the total number of chunks created
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python split_tsv.py <filename.tsv>")
+        sys.exit(1)
+
+    file_name = sys.argv[1]
+    file_path = os.path.join(os.getcwd(), file_name)  # Get the full path in the current directory
+
+    if not os.path.isfile(file_path):
+        print(f"File '{file_name}' not found in the current directory.")
+        sys.exit(1)
+
+    chunk_count = split_file(file_path)  # Split the file
+    print(f"File split into {chunk_count} chunks.")
