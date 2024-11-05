@@ -45,6 +45,6 @@ def export_secrets_to_csv(key_vault_name, csv_file):
         print(f"An error occurred: {str(e)}")
 
 if __name__ == "__main__":
-    key_vault_name = os.getenv('AZURE_KEY_VAULT_NAME', 'kv-rea-dev-dems-aue-01')  # Use an environment variable for flexibility
+    key_vault_name = os.getenv('AZURE_KEY_VAULT_NAME', '<keyvault_name>')  # Use an environment variable for flexibility
     csv_file = 'keyvault_secrets.csv'
     export_secrets_to_csv(key_vault_name, csv_file)
